@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  app:
+    ports:
+    - 8080:8080
+    image: 'docker-app:0.0.1'
+    build:
+      context: .
+    container_name: app
+    depends_on:
+      - db
+    environment:
+      - spring.datasource.url=jdbc:sqlserver://localhost;databaseName=operaciones;TrustServerCertificate=True
+      - spring.datasource.username=sa
+      - spring.datasource.password=sSecr3td0ckpassw0rds
+      - spring.datasource.driverClassName=com.microsoft.sqlserver.jdbc.SQLServerDriver
+      - spring.jpa.show-sql=false
+      - spring.jpa.hibernate.dialect=org.hibernate.dialect.SQLServer2012Dialect
+      - spring.jpa.hibernate.ddl-auto=create
+
+  db:
+    build: ~/db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+    - 1433:1433
+    volumes:
+    - ~/apps/mssql/data:/var/lib/mssqlql/data
+    environment:
+    - ACCEPT_EULA=Y
+    - SA_PASSWORD=sSecr3td0ckpassw0rds
+    - TrustServerCertificate=True
